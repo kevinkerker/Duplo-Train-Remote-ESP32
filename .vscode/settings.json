@@ -1,0 +1,18 @@
+{
+    "files.associations": {
+        "*.jinja-html": "jinja-html",
+        "plyconfig.json": "jsonc",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "cstddef": "cpp",
+        "system_error": "cpp",
+        "*.tcc": "cpp"
+    }
+}
