@@ -22,6 +22,7 @@ static const unsigned char PROGMEM logo_bmp[] = {
 
 void display_init();
 void display_print(String message, uint8_t line);
+void display_display();
 
 // extern Adafruit_SSD1306 display();
 

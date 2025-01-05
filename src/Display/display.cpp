@@ -5,12 +5,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 void display_init() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
-    for (;;);  // Don't proceed, loop forever
   }
-  // Show initial display buffer contents on the screen --
-  // the library initializes this with an Adafruit splash screen.
-  display.display();
-  delay(2000);  // Pause for 2 seconds
 
   // Clear the buffer
   display.clearDisplay();
@@ -24,7 +19,8 @@ void display_init() {
 void display_print(String message, uint8_t line) {
   switch (line) {
     case 0:
-      // code block
+      display.setCursor(10, 0);
+      display.println(message);
       break;
     case 1:
       display.setCursor(10, 16);
@@ -33,5 +29,11 @@ void display_print(String message, uint8_t line) {
     default:
       break;
   }
+}
+
+void display_display() {
   display.display();
+  display.clearDisplay();
+  display.setTextSize(2);  // Draw 2X-scale text
+  display.setTextColor(SSD1306_WHITE);
 }

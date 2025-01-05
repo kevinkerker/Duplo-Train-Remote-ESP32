@@ -19,17 +19,58 @@
 
 #include "Display/display.h"
 
-unsigned long currentMillis = 0;
-
+void duplo_speed(void *parameter) {
+  Serial.print("Init duplo_speed\n");
+  while (1) {
+    duplo.loop();
+    delay(100);
+  }
+}
+void duplo_buttons(void *parameter) {
+  Serial.print("Init duplo_color\n");
+  while (1) {
+    // duplo.buttons();
+    delay(2000);
+  }
+}
+void duplo_display(void *parameter) {
+  Serial.print("Init duplo_display\n");
+  while (1) {
+    duplo.display();
+    delay(1000);
+  }
+}
 void setup() {
   Serial.begin(115200);
   display_init();
   duplo.init();
+
+  xTaskCreate(duplo_speed,         // Function name of the task
+              "Duplo Loop Speed",  // Name of the task (e.g. for debugging)
+              2048,                // Stack size (bytes)
+              NULL,                // Parameter to pass
+              1,                   // Task priority
+              NULL                 // Task handle
+  );
+
+  xTaskCreate(duplo_buttons,  // Function name of the task
+              "Duplo Color",  // Name of the task (e.g. for debugging)
+              2048,           // Stack size (bytes)
+              NULL,           // Parameter to pass
+              1,              // Task priority
+              NULL            // Task handle
+  );
+  xTaskCreate(duplo_display,  // Function name of the task
+              "Duplo Color",  // Name of the task (e.g. for debugging)
+              2048,           // Stack size (bytes)
+              NULL,           // Parameter to pass
+              1,              // Task priority
+              NULL            // Task handle
+  );
 }
 
 // main loop
 void loop() {
   // connect flow
-  duplo.loop();
 
 }  // End of loop
