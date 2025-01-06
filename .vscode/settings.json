@@ -13,6 +13,7 @@
         "initializer_list": "cpp",
         "cstddef": "cpp",
         "system_error": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     }
 }

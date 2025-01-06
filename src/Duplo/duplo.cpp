@@ -3,6 +3,7 @@
 #include "Display/display.h"
 
 DUPLO duplo;
+byte motorPort = (byte)DuploTrainHubPort::MOTOR;
 
 void colorSensorCallback(void *hub, byte portNumber, DeviceType deviceType, uint8_t *pData) {
   Lpf2Hub *myHub = (Lpf2Hub *)hub;
@@ -26,6 +27,14 @@ void colorSensorCallback(void *hub, byte portNumber, DeviceType deviceType, uint
   }
 }
 
+void speedometerSensorCallback(void *hub, byte portNumber, DeviceType deviceType, uint8_t *pData) {
+  Lpf2Hub *myHub = (Lpf2Hub *)hub;
+
+  if (deviceType == DeviceType::DUPLO_TRAIN_BASE_SPEEDOMETER) {
+    duplo.actual_speed = myHub->parseSpeedometer(pData);
+  }
+}
+
 void DUPLO::connecting() {
   if (myHub.isConnecting()) {
     myHub.connectHub();
@@ -35,6 +44,7 @@ void DUPLO::connecting() {
       delay(500);
       if (myHub.isConnected()) {
         // myHub.activatePortDevice((byte)DuploTrainHubPort::COLOR, colorSensorCallback);
+        myHub.activatePortDevice((byte)DuploTrainHubPort::SPEEDOMETER, speedometerSensorCallback);
         delay(1000);
         myHub.setLedColor(GREEN);
         delay(1000);
@@ -64,14 +74,19 @@ void DUPLO::display() {
   }
   display_display();
 }
-void DUPLO::buttons() {
-  // uint8_t action_color = 0;
-  // myHub.parseColor(&action_color);
-  if (myHub.isConnected()) {
-    Color currentColor = cycleColor();
-    Serial.print("Current Color: ");
-    Serial.println(static_cast<int>(currentColor));
-    myHub.setLedColor(currentColor);
+void DUPLO::safety() {
+  if (actual_speed < 20 && actual_speed > -20) {
+    if (motor_running && millis() - millis_running > 1000) {
+      myHub.stopBasicMotor(motorPort);
+      motor_running = false;
+      safety_stop = true;
+    }
+  }
+  if (speed > 0) {
+    myHub.setLedColor(Color::WHITE);
+  }
+  if (speed < 0) {
+    myHub.setLedColor(Color::RED);
   }
 }
 Color DUPLO::cycleColor() {
@@ -105,32 +120,40 @@ void DUPLO::loop() {
   // Serial.print(", y = ");
   // Serial.println(valueY);
 
-  float speed = (float(valueY) - zeroY) * (float(50) / float(2048));
+  speed = (float(valueY) - zeroY) * (float(50) / float(2048));
   // Serial.print(", y = ");
   // Serial.print(valueY);
   // Serial.print(", zeroY = ");
   // Serial.print(zeroY);
   // Serial.print(", Speed = ");
   // Serial.println(speed);
+  // Serial.print(", actual_speed = ");
+  // Serial.println(actual_speed);
+  // if (safety_stop) {
+  //   Serial.println("safety_stop = true");
+  // } else {
+  //   Serial.println("safety_stop = false");
+  // }
 
   if (speed < 20 && speed > -20) {
     speed = 0;
   }
   if (myHub.isConnected()) {
     if (speed != 0) {
-      myHub.setBasicMotorSpeed(motorPort, int(speed));
-      motor_running = true;
+      if (!safety_stop) {
+        myHub.setBasicMotorSpeed(motorPort, int(speed));
+        motor_running = true;
+        if (millis_running == 0) {
+          millis_running = millis();
+        }
+      }
     } else {
       if (motor_running) {
         myHub.stopBasicMotor(motorPort);
       }
       motor_running = false;
+      safety_stop = false;
+      millis_running = 0;
     }
-  }
-  if (speed > 0) {
-    myHub.setLedColor(Color::WHITE);
-  }
-  if (speed < 0) {
-    myHub.setLedColor(Color::RED);
   }
 }
