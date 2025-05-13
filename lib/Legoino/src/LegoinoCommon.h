@@ -6,7 +6,7 @@
  *
 */
 
-#if defined(ESP32)
+// #if defined(ESP32)
 
 #ifndef LegoinoCommon_h
 #define LegoinoCommon_h
@@ -32,4 +32,4 @@ public:
 
 #endif // LegoinoCommon_h
 
-#endif // ESP32
+// #endif // ESP32

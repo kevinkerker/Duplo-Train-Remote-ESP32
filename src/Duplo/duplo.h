@@ -18,7 +18,7 @@ class DUPLO {  // The class
   void connecting();
   void loop();
   void display();
-  void safety();
+  void lights();
   int actual_speed = 0;
 
  private:

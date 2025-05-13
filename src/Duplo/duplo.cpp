@@ -74,14 +74,7 @@ void DUPLO::display() {
   }
   display_display();
 }
-void DUPLO::safety() {
-  if (actual_speed < 20 && actual_speed > -20) {
-    if (motor_running && millis() - millis_running > 1000) {
-      myHub.stopBasicMotor(motorPort);
-      motor_running = false;
-      safety_stop = true;
-    }
-  }
+void DUPLO::lights() {
   if (speed > 0) {
     myHub.setLedColor(Color::WHITE);
   }
@@ -139,6 +132,13 @@ void DUPLO::loop() {
     speed = 0;
   }
   if (myHub.isConnected()) {
+    if (actual_speed < 20 && actual_speed > -20) {
+      if (motor_running && millis() - millis_running > 500) {
+        myHub.stopBasicMotor(motorPort);
+        motor_running = false;
+        safety_stop = true;
+      }
+    }
     if (speed != 0) {
       if (!safety_stop) {
         myHub.setBasicMotorSpeed(motorPort, int(speed));

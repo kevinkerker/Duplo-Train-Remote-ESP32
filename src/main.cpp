@@ -26,11 +26,11 @@ void duplo_speed(void *parameter) {
     delay(100);
   }
 }
-void duplo_safety(void *parameter) {
+void duplo_lights(void *parameter) {
   Serial.print("Init duplo_safety\n");
   while (1) {
-    duplo.safety();
-    delay(500);
+    duplo.lights();
+    delay(300);
   }
 }
 void duplo_display(void *parameter) {
@@ -53,7 +53,7 @@ void setup() {
               NULL                 // Task handle
   );
 
-  xTaskCreate(duplo_safety,   // Function name of the task
+  xTaskCreate(duplo_lights,   // Function name of the task
               "Duplo Color",  // Name of the task (e.g. for debugging)
               2048,           // Stack size (bytes)
               NULL,           // Parameter to pass
